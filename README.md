@@ -3,6 +3,7 @@
 Zero-dependency document-to-markdown conversion for Node.js.
 
 [![npm version](https://img.shields.io/npm/v/docling-node-ts.svg)](https://www.npmjs.com/package/docling-node-ts)
+[![npm downloads](https://img.shields.io/npm/dt/docling-node-ts.svg)](https://www.npmjs.com/package/docling-node-ts)
 [![license](https://img.shields.io/npm/l/docling-node-ts.svg)](https://github.com/SiluPanda/docling-node-ts/blob/master/LICENSE)
 [![node](https://img.shields.io/node/v/docling-node-ts.svg)](https://nodejs.org)
 
