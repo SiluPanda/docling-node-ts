@@ -7,12 +7,12 @@ This file tracks all implementation tasks derived from SPEC.md. Each task is gra
 ## Phase 0: Project Scaffolding & Dependencies
 
 - [ ] **Install runtime dependencies** — Add `pdfjs-dist`, `jszip`, and `cheerio` to `package.json` dependencies. | Status: not_done
-- [ ] **Install dev dependencies** — Add `typescript`, `vitest`, `eslint`, `@types/node`, and any necessary ESLint plugins/configs to devDependencies. | Status: not_done
+- [x] **Install dev dependencies** — Add `typescript`, `vitest`, `eslint`, `@types/node`, and any necessary ESLint plugins/configs to devDependencies. | Status: done
 - [ ] **Declare optional peer dependencies** — Add `tesseract.js` and `canvas` as optional peerDependencies in `package.json` with `peerDependenciesMeta` marking them optional. | Status: not_done
 - [ ] **Configure CLI bin entry** — Add `"bin": { "docling-node-ts": "./dist/cli.js" }` to `package.json`. | Status: not_done
 - [ ] **Create directory structure** — Create the full directory tree as specified in Section 20: `src/parsers/pdf/`, `src/parsers/docx/`, `src/parsers/pptx/`, `src/parsers/html/`, `src/parsers/text/`, `src/pipeline/`, `src/__tests__/`, and all subdirectories. | Status: not_done
-- [ ] **Configure Vitest** — Create `vitest.config.ts` (or add config to `package.json`) so `npm run test` works with the project structure. | Status: not_done
-- [ ] **Configure ESLint** — Create `.eslintrc` or `eslint.config.js` for TypeScript linting so `npm run lint` works. | Status: not_done
+- [x] **Configure Vitest** — Create `vitest.config.ts` (or add config to `package.json`) so `npm run test` works with the project structure. | Status: done
+- [x] **Configure ESLint** — Create `.eslintrc` or `eslint.config.js` for TypeScript linting so `npm run lint` works. | Status: done
 - [ ] **Create .gitignore** — Ensure `node_modules/`, `dist/`, and any temp/test output directories are ignored. | Status: not_done
 - [ ] **Create test fixtures directory** — Create `src/__tests__/fixtures/pdf/`, `fixtures/docx/`, `fixtures/pptx/`, `fixtures/html/` directories for test documents. | Status: not_done
 
@@ -23,7 +23,7 @@ This file tracks all implementation tasks derived from SPEC.md. Each task is gra
 ### 1A: Type Definitions (`src/types.ts`)
 
 - [ ] **Define DocumentInput type** — `type DocumentInput = string | Buffer | URL | ReadableStream<Uint8Array>` covering file paths, Buffers, URLs, and streams. | Status: not_done
-- [ ] **Define DocumentFormat type** — `type DocumentFormat = 'pdf' | 'docx' | 'pptx' | 'html' | 'text' | 'markdown'`. | Status: not_done
+- [x] **Define DocumentFormat type** — `type DocumentFormat = 'pdf' | 'docx' | 'pptx' | 'html' | 'text' | 'markdown'`. | Status: done
 - [ ] **Define ConversionResult interface** — With fields: `markdown`, `metadata`, `images`, `tables`, `pages?`, `warnings`, `format`, `durationMs`. | Status: not_done
 - [ ] **Define DocumentMetadata interface** — With fields: `title?`, `author?`, `createdDate?`, `modifiedDate?`, `pageCount?`, `wordCount`, `charCount`, `formatMetadata?`. | Status: not_done
 - [ ] **Define ImageInfo interface** — With fields: `index`, `filePath?`, `data?`, `base64?`, `format`, `width?`, `height?`, `alt`, `page?`. | Status: not_done
@@ -54,13 +54,13 @@ This file tracks all implementation tasks derived from SPEC.md. Each task is gra
 
 ### 1D: Format Detection (`src/detect.ts`)
 
-- [ ] **Implement file extension detection** — Match `.pdf`, `.docx`, `.pptx`, `.html`, `.htm`, `.txt`, `.md` from file paths and URLs. | Status: not_done
-- [ ] **Implement magic byte detection for PDF** — Check for `%PDF` (bytes `25 50 44 46`) at start of Buffer. | Status: not_done
-- [ ] **Implement magic byte detection for ZIP-based formats** — Check for `PK` (bytes `50 4B 03 04`) at start of Buffer. | Status: not_done
-- [ ] **Implement DOCX vs PPTX disambiguation** — Read `[Content_Types].xml` from the ZIP to distinguish `wordprocessingml` (DOCX) from `presentationml` (PPTX). | Status: not_done
-- [ ] **Implement HTML detection from content** — Check for `<!DOCTYPE` or `<html` (case-insensitive) at start of content. | Status: not_done
-- [ ] **Implement fallback to plain text** — Default to `text` when no other format matches. | Status: not_done
-- [ ] **Implement explicit format override** — When `options.format` is provided, use it directly without detection. | Status: not_done
+- [x] **Implement file extension detection** — Match `.pdf`, `.docx`, `.pptx`, `.html`, `.htm`, `.txt`, `.md` from file paths and URLs. | Status: done
+- [x] **Implement magic byte detection for PDF** — Check for `%PDF` (bytes `25 50 44 46`) at start of Buffer. | Status: done
+- [x] **Implement magic byte detection for ZIP-based formats** — Check for `PK` (bytes `50 4B 03 04`) at start of Buffer. | Status: done
+- [x] **Implement DOCX vs PPTX disambiguation** — Read `[Content_Types].xml` from the ZIP to distinguish `wordprocessingml` (DOCX) from `presentationml` (PPTX). | Status: done
+- [x] **Implement HTML detection from content** — Check for `<!DOCTYPE` or `<html` (case-insensitive) at start of content. | Status: done
+- [x] **Implement fallback to plain text** — Default to `text` when no other format matches. | Status: done
+- [x] **Implement explicit format override** — When `options.format` is provided, use it directly without detection. | Status: done
 - [ ] **Handle URL inputs** — Fetch the resource from a URL, detect format from URL extension, Content-Type header, or response body. | Status: not_done
 - [ ] **Handle ReadableStream inputs** — Buffer the stream to a complete Buffer before detection. | Status: not_done
 - [ ] **Return FormatDetectionResult** — Include `format`, `confidence` (0.0-1.0), and `method` (explicit, extension, magic-bytes, zip-content-type, heuristic). | Status: not_done
@@ -83,13 +83,13 @@ This file tracks all implementation tasks derived from SPEC.md. Each task is gra
 
 ### 1F: Post-Processing Cleanup (`src/pipeline/cleanup.ts`)
 
-- [ ] **Implement whitespace normalization** — Collapse multiple consecutive blank lines to max 2, remove trailing whitespace from lines, ensure document ends with single newline. | Status: not_done
+- [x] **Implement whitespace normalization** — Collapse multiple consecutive blank lines to max 2, remove trailing whitespace from lines, ensure document ends with single newline. | Status: done
 - [ ] **Implement encoding fixes** — Replace ligatures (`fi`, `fl`, `ff`), optionally convert curly quotes to straight quotes, remove soft hyphens. | Status: not_done
 - [ ] **Implement garbage character removal** — Remove null bytes, control characters (except `\n` and `\t`), and PDF operator fragments (`BT`, `ET`, `Tf`, `Tm`, `Tj`). | Status: not_done
-- [ ] **Implement heading normalization** — When `normalizeHeadings` is true, shift heading levels to form a valid hierarchy (no jumps from H1 to H4 without H2/H3). | Status: not_done
+- [x] **Implement heading normalization** — When `normalizeHeadings` is true, shift heading levels to form a valid hierarchy (no jumps from H1 to H4 without H2/H3). | Status: done
 - [ ] **Implement table cleanup** — Ensure consistent cell counts across rows, escape pipe characters. | Status: not_done
 - [ ] **Implement link deduplication** — Remove duplicate links from overlapping extraction methods. | Status: not_done
-- [ ] **Implement HTML entity decoding** — Decode `&amp;`, `&lt;`, `&gt;`, `&nbsp;` to Unicode equivalents. | Status: not_done
+- [x] **Implement HTML entity decoding** — Decode `&amp;`, `&lt;`, `&gt;`, `&nbsp;` to Unicode equivalents. | Status: done
 
 ### 1G: Image Handler (`src/pipeline/image-handler.ts`)
 
@@ -103,45 +103,45 @@ This file tracks all implementation tasks derived from SPEC.md. Each task is gra
 
 ### 1H: HTML Parser (`src/parsers/html/`)
 
-- [ ] **Implement HTML parser entry point** — `src/parsers/html/index.ts` that accepts HTML input and options, returns `ContentBlock[]` and metadata. | Status: not_done
+- [x] **Implement HTML parser entry point** — `src/parsers/html/index.ts` that accepts HTML input and options, returns `ContentBlock[]` and metadata. | Status: done
 - [ ] **Implement readability-based article extraction** — Strip noise elements (`<script>`, `<style>`, `<nav>`, `<header>`, `<footer>`, `<aside>`, etc.), score content nodes by text length, paragraph count, and link density, select top candidate container. Prefer `<article>` and `<main>` elements. | Status: not_done
-- [ ] **Implement noise element removal** — Remove elements matching common ad/navigation class names: `nav`, `sidebar`, `footer`, `ad`, `advertisement`, `cookie`, `banner`, `popup`, `modal`. Support custom `removeSelectors`. | Status: not_done
+- [x] **Implement noise element removal** — Remove elements matching common ad/navigation class names: `nav`, `sidebar`, `footer`, `ad`, `advertisement`, `cookie`, `banner`, `popup`, `modal`. Support custom `removeSelectors`. | Status: done
 - [ ] **Implement contentSelector override** — When `htmlOptions.contentSelector` is provided, use that CSS selector instead of readability scoring. | Status: not_done
 - [ ] **Implement readability bypass** — When `htmlOptions.readability` is `false`, convert the entire HTML document. | Status: not_done
-- [ ] **Implement heading tag mapping** — `<h1>` through `<h6>` to heading ContentBlocks with correct levels. | Status: not_done
-- [ ] **Implement paragraph tag mapping** — `<p>` to paragraph ContentBlocks. | Status: not_done
-- [ ] **Implement inline formatting mapping** — `<strong>`/`<b>` to `**bold**`, `<em>`/`<i>` to `*italic*`, `<code>` to backtick code, `<del>`/`<s>`/`<strike>` to `~~strikethrough~~`. | Status: not_done
-- [ ] **Implement link mapping** — `<a href="url">` to `[text](url)` markdown links. | Status: not_done
-- [ ] **Implement image mapping** — `<img src="url" alt="text">` to `![text](url)` with alt text from attributes. | Status: not_done
-- [ ] **Implement list mapping** — `<ul>` to unordered lists, `<ol>` to ordered lists, handle nested `<li>` elements. | Status: not_done
-- [ ] **Implement table mapping** — `<table>` to GFM pipe tables. Parse `<thead>`, `<tbody>`, `<th>`, `<td>`. Expand `rowspan` and `colspan` into the grid. | Status: not_done
-- [ ] **Implement code block mapping** — `<pre>` and `<pre><code>` to fenced code blocks. Preserve `class="language-*"` language hints. | Status: not_done
-- [ ] **Implement blockquote mapping** — `<blockquote>` to `> ` prefixed blocks. | Status: not_done
-- [ ] **Implement figure/figcaption mapping** — `<figure>` as image with optional `<figcaption>` as italic text below. | Status: not_done
+- [x] **Implement heading tag mapping** — `<h1>` through `<h6>` to heading ContentBlocks with correct levels. | Status: done
+- [x] **Implement paragraph tag mapping** — `<p>` to paragraph ContentBlocks. | Status: done
+- [x] **Implement inline formatting mapping** — `<strong>`/`<b>` to `**bold**`, `<em>`/`<i>` to `*italic*`, `<code>` to backtick code, `<del>`/`<s>`/`<strike>` to `~~strikethrough~~`. | Status: done
+- [x] **Implement link mapping** — `<a href="url">` to `[text](url)` markdown links. | Status: done
+- [x] **Implement image mapping** — `<img src="url" alt="text">` to `![text](url)` with alt text from attributes. | Status: done
+- [x] **Implement list mapping** — `<ul>` to unordered lists, `<ol>` to ordered lists, handle nested `<li>` elements. | Status: done
+- [x] **Implement table mapping** — `<table>` to GFM pipe tables. Parse `<thead>`, `<tbody>`, `<th>`, `<td>`. Expand `rowspan` and `colspan` into the grid. | Status: done
+- [x] **Implement code block mapping** — `<pre>` and `<pre><code>` to fenced code blocks. Preserve `class="language-*"` language hints. | Status: done
+- [x] **Implement blockquote mapping** — `<blockquote>` to `> ` prefixed blocks. | Status: done
+- [x] **Implement figure/figcaption mapping** — `<figure>` as image with optional `<figcaption>` as italic text below. | Status: done
 - [ ] **Implement details/summary passthrough** — Preserve `<details>` and `<summary>` as HTML. | Status: not_done
-- [ ] **Implement sup/sub mapping** — `<sup>` to `<sup>text</sup>`, `<sub>` to `<sub>text</sub>`. | Status: not_done
-- [ ] **Implement horizontal rule mapping** — `<hr>` to `---`. | Status: not_done
-- [ ] **Implement line break mapping** — `<br>` to newline within paragraphs. | Status: not_done
-- [ ] **Implement div/span/section unwrapping** — Remove wrapper tags, preserve inner content. | Status: not_done
+- [x] **Implement sup/sub mapping** — `<sup>` to `<sup>text</sup>`, `<sub>` to `<sub>text</sub>`. | Status: done
+- [x] **Implement horizontal rule mapping** — `<hr>` to `---`. | Status: done
+- [x] **Implement line break mapping** — `<br>` to newline within paragraphs. | Status: done
+- [x] **Implement div/span/section unwrapping** — Remove wrapper tags, preserve inner content. | Status: done
 - [ ] **Implement mark tag mapping** — `<mark>` to `==text==` or plain text. | Status: not_done
 - [ ] **Implement base URL resolution** — When `htmlOptions.baseUrl` is provided, resolve relative URLs in images and links. | Status: not_done
-- [ ] **Implement HTML metadata extraction** — Extract `<title>`, `<meta name="author">`, `<meta name="description">`, `<meta name="date">`, Open Graph tags (`og:title`, `og:description`, `og:image`, `og:type`, `og:url`), Twitter Card tags, and `<link rel="canonical">`. | Status: not_done
+- [x] **Implement HTML metadata extraction** — Extract `<title>`, `<meta name="author">`, `<meta name="description">`, `<meta name="date">`, Open Graph tags (`og:title`, `og:description`, `og:image`, `og:type`, `og:url`), Twitter Card tags, and `<link rel="canonical">`. | Status: done
 
 ### 1I: Plain Text Passthrough (`src/parsers/text/index.ts`)
 
-- [ ] **Implement plain text parser** — Read raw text, normalize whitespace and line endings, wrap in paragraph content blocks. | Status: not_done
-- [ ] **Implement markdown passthrough** — For `.md` files, clean up whitespace, normalize line endings, remove trailing spaces, optionally reformat. | Status: not_done
+- [x] **Implement plain text parser** — Read raw text, normalize whitespace and line endings, wrap in paragraph content blocks. | Status: done
+- [x] **Implement markdown passthrough** — For `.md` files, clean up whitespace, normalize line endings, remove trailing spaces, optionally reformat. | Status: done
 
 ### 1J: Conversion Orchestration (`src/convert.ts`)
 
-- [ ] **Implement convert() function** — Accept `DocumentInput` and `ConvertOptions`, orchestrate the pipeline: detect format, resolve input (file path to Buffer, URL to Buffer, stream to Buffer), invoke parser, generate markdown, run cleanup, compute metadata (word count, char count), measure duration, return `ConversionResult`. | Status: not_done
+- [x] **Implement convert() function** — Accept `DocumentInput` and `ConvertOptions`, orchestrate the pipeline: detect format, resolve input (file path to Buffer, URL to Buffer, stream to Buffer), invoke parser, generate markdown, run cleanup, compute metadata (word count, char count), measure duration, return `ConversionResult`. | Status: done
 - [ ] **Implement input resolution for file paths** — Read file from disk using `fs.promises.readFile`. | Status: not_done
 - [ ] **Implement input resolution for URLs** — Fetch content from HTTP/HTTPS URLs. | Status: not_done
 - [ ] **Implement input resolution for ReadableStreams** — Buffer the stream to a complete Buffer. | Status: not_done
-- [ ] **Implement input resolution for Buffers** — Use the Buffer directly. | Status: not_done
+- [x] **Implement input resolution for Buffers** — Use the Buffer directly. | Status: done
 - [ ] **Implement AbortSignal support** — Check `options.signal` for cancellation at key pipeline stages. Throw on abort. | Status: not_done
-- [ ] **Wire up parser dispatch** — Based on detected format, invoke the correct parser (HTML, text/markdown in Phase 1). | Status: not_done
-- [ ] **Compute wordCount and charCount** — From the final extracted text, compute metadata statistics. | Status: not_done
+- [x] **Wire up parser dispatch** — Based on detected format, invoke the correct parser (HTML, text/markdown in Phase 1). | Status: done
+- [x] **Compute wordCount and charCount** — From the final extracted text, compute metadata statistics. | Status: done
 
 ### 1K: Parser Registry (`src/parsers/index.ts`)
 
@@ -154,11 +154,11 @@ This file tracks all implementation tasks derived from SPEC.md. Each task is gra
 
 ### 1M: Public API Exports (`src/index.ts`)
 
-- [ ] **Export convert function** — From `src/convert.ts`. | Status: not_done
-- [ ] **Export format-specific functions** — `convertPDF`, `convertDOCX`, `convertPPTX`, `convertHTML` (stubs for Phase 1, wire up as parsers are built). | Status: not_done
+- [x] **Export convert function** — From `src/convert.ts`. | Status: done
+- [x] **Export format-specific functions** — `convertPDF`, `convertDOCX`, `convertPPTX`, `convertHTML` (stubs for Phase 1, wire up as parsers are built). | Status: done
 - [ ] **Export createConverter factory** — From `src/factory.ts`. | Status: not_done
-- [ ] **Export detectFormat function** — From `src/detect.ts`. | Status: not_done
-- [ ] **Export all type definitions** — From `src/types.ts`. | Status: not_done
+- [x] **Export detectFormat function** — From `src/detect.ts`. | Status: done
+- [x] **Export all type definitions** — From `src/types.ts`. | Status: done
 - [ ] **Export all error classes** — From `src/errors.ts`. | Status: not_done
 
 ### 1N: CLI Skeleton (`src/cli.ts`)
@@ -179,14 +179,14 @@ This file tracks all implementation tasks derived from SPEC.md. Each task is gra
 
 ### 1O: Phase 1 Tests
 
-- [ ] **Write format detection unit tests** — Test extension detection for each format, magic byte detection for PDF, ZIP detection for DOCX/PPTX, HTML content detection, plain text fallback, explicit format override, ambiguous ZIP input. | Status: not_done
+- [x] **Write format detection unit tests** — Test extension detection for each format, magic byte detection for PDF, ZIP detection for DOCX/PPTX, HTML content detection, plain text fallback, explicit format override, ambiguous ZIP input. | Status: done
 - [ ] **Write markdown generator unit tests** — Test serialization for every ContentBlock type: headings (all 6 levels), paragraphs, tables (with alignment, escaping, padding), unordered lists (flat and nested), ordered lists (flat and nested), images, code blocks (with and without language), blockquotes, horizontal rules, page breaks. | Status: not_done
-- [ ] **Write cleanup unit tests** — Test whitespace normalization, encoding fixes (ligatures, curly quotes, soft hyphens), garbage character removal, heading normalization, table cleanup, link deduplication, HTML entity decoding. | Status: not_done
+- [x] **Write cleanup unit tests** — Test whitespace normalization, encoding fixes (ligatures, curly quotes, soft hyphens), garbage character removal, heading normalization, table cleanup, link deduplication, HTML entity decoding. | Status: done
 - [ ] **Write HTML readability tests** — Feed HTML with content and noise elements, verify correct content container selection and noise stripping. | Status: not_done
-- [ ] **Write HTML tag mapping tests** — Test every HTML-to-markdown mapping listed in Section 9.2. | Status: not_done
-- [ ] **Write HTML metadata extraction tests** — Test extraction of title, author, description, date, Open Graph, Twitter Card, and canonical URL. | Status: not_done
-- [ ] **Write plain text passthrough tests** — Verify whitespace normalization and line ending handling. | Status: not_done
-- [ ] **Write convert() orchestration tests** — Test the full pipeline with HTML and text inputs end-to-end. | Status: not_done
+- [x] **Write HTML tag mapping tests** — Test every HTML-to-markdown mapping listed in Section 9.2. | Status: done
+- [x] **Write HTML metadata extraction tests** — Test extraction of title, author, description, date, Open Graph, Twitter Card, and canonical URL. | Status: done
+- [x] **Write plain text passthrough tests** — Verify whitespace normalization and line ending handling. | Status: done
+- [x] **Write convert() orchestration tests** — Test the full pipeline with HTML and text inputs end-to-end. | Status: done
 - [ ] **Write CLI skeleton tests** — Test argument parsing, --help, --version, file input, stdout output, --json mode, exit codes for errors. | Status: not_done
 - [ ] **Create HTML test fixtures** — `article.html` (with navigation, sidebar, ads), `minimal.html` (content only). | Status: not_done
 
