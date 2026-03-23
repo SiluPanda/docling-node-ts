@@ -1,6 +1,6 @@
 {
   "name": "docling-node-ts",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Convert documents to clean RAG-ready markdown in Node.js",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
