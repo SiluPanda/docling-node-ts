@@ -168,4 +168,14 @@ describe('convertTextToMarkdown', () => {
       expect(result).toContain('This is the conclusion.');
     });
   });
+
+  describe('ordered list indentation', () => {
+    it('preserves indentation for ordered list items', () => {
+      const text = '  1) First\n  2) Second\n    3) Nested';
+      const result = convertTextToMarkdown(text);
+      expect(result).toContain('  1. First');
+      expect(result).toContain('  2. Second');
+      expect(result).toContain('    3. Nested');
+    });
+  });
 });

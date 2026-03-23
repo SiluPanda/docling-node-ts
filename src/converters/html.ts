@@ -236,8 +236,8 @@ function decodeHtmlEntities(text: string): string {
     .replace(/&copy;/g, '\u00A9')
     .replace(/&reg;/g, '\u00AE')
     .replace(/&trade;/g, '\u2122')
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
-    .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCharCode(parseInt(code, 16)));
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(parseInt(code, 10)))
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, code) => String.fromCodePoint(parseInt(code, 16)));
 }
 
 /**
@@ -335,7 +335,7 @@ function shouldStrip(node: HtmlNode): boolean {
 /**
  * Convert an HTML table element to a GFM markdown table.
  */
-function convertTable(node: HtmlNode): string {
+function convertTable(node: HtmlNode, images?: ImageReference[]): string {
   const rows: string[][] = [];
   let hasHeader = false;
 
@@ -355,9 +355,9 @@ function convertTable(node: HtmlNode): string {
             if (cell.type !== 'element') continue;
             if (cell.tag === 'th') {
               rowIsHeader = true;
-              cells.push(convertInline(cell).trim());
+              cells.push(convertInline(cell, images).trim());
             } else if (cell.tag === 'td') {
-              cells.push(convertInline(cell).trim());
+              cells.push(convertInline(cell, images).trim());
             }
           }
         }
@@ -411,7 +411,7 @@ function convertTable(node: HtmlNode): string {
 /**
  * Convert inline HTML content to markdown (handles bold, italic, code, links, etc.).
  */
-function convertInline(node: HtmlNode): string {
+function convertInline(node: HtmlNode, images?: ImageReference[]): string {
   if (node.type === 'text') return node.text || '';
   if (node.type === 'comment') return '';
   if (shouldStrip(node)) return '';
@@ -420,7 +420,7 @@ function convertInline(node: HtmlNode): string {
 
   if (tag === 'br') return '\n';
 
-  const childContent = (node.children || []).map(convertInline).join('');
+  const childContent = (node.children || []).map(c => convertInline(c, images)).join('');
 
   switch (tag) {
     case 'strong':
@@ -443,6 +443,9 @@ function convertInline(node: HtmlNode): string {
     case 'img': {
       const src = node.attrs?.src || '';
       const alt = node.attrs?.alt || '';
+      if (src && images) {
+        images.push({ id: `img-${images.length + 1}`, alt, src });
+      }
       return `![${alt}](${src})`;
     }
     case 'sup':
@@ -457,7 +460,7 @@ function convertInline(node: HtmlNode): string {
 /**
  * Convert a list element (ul or ol) to markdown.
  */
-function convertList(node: HtmlNode, indent: number = 0, ordered: boolean = false): string {
+function convertList(node: HtmlNode, indent: number = 0, ordered: boolean = false, images?: ImageReference[]): string {
   if (!node.children) return '';
   const lines: string[] = [];
   let itemIndex = 1;
@@ -475,9 +478,9 @@ function convertList(node: HtmlNode, indent: number = 0, ordered: boolean = fals
     if (child.children) {
       for (const liChild of child.children) {
         if (liChild.type === 'element' && (liChild.tag === 'ul' || liChild.tag === 'ol')) {
-          nestedLists.push(convertList(liChild, indent + 1, liChild.tag === 'ol'));
+          nestedLists.push(convertList(liChild, indent + 1, liChild.tag === 'ol', images));
         } else {
-          inlineContent.push(convertInline(liChild));
+          inlineContent.push(convertInline(liChild, images));
         }
       }
     }
@@ -517,13 +520,13 @@ function convertNode(node: HtmlNode, images: ImageReference[]): string {
     case 'h5':
     case 'h6': {
       const level = parseInt(tag[1], 10);
-      const text = convertInline({ type: 'element', tag: 'span', children: node.children }).trim();
+      const text = convertInline({ type: 'element', tag: 'span', children: node.children }, images).trim();
       if (!text) return '';
       return `\n${'#'.repeat(level)} ${text}\n`;
     }
 
     case 'p': {
-      const text = convertInline({ type: 'element', tag: 'span', children: node.children }).trim();
+      const text = convertInline({ type: 'element', tag: 'span', children: node.children }, images).trim();
       if (!text) return '';
       return `\n${text}\n`;
     }
@@ -563,13 +566,13 @@ function convertNode(node: HtmlNode, images: ImageReference[]): string {
     }
 
     case 'ul':
-      return `\n${convertList(node, 0, false)}\n`;
+      return `\n${convertList(node, 0, false, images)}\n`;
 
     case 'ol':
-      return `\n${convertList(node, 0, true)}\n`;
+      return `\n${convertList(node, 0, true, images)}\n`;
 
     case 'table':
-      return `\n${convertTable(node)}\n`;
+      return `\n${convertTable(node, images)}\n`;
 
     case 'hr':
       return '\n---\n';
@@ -592,7 +595,7 @@ function convertNode(node: HtmlNode, images: ImageReference[]): string {
 
     case 'a': {
       const href = node.attrs?.href || '';
-      const text = convertInline({ type: 'element', tag: 'span', children: node.children }).trim();
+      const text = convertInline({ type: 'element', tag: 'span', children: node.children }, images).trim();
       if (!href || !text) return text || '';
       return `[${text}](${href})`;
     }
@@ -604,7 +607,7 @@ function convertNode(node: HtmlNode, images: ImageReference[]): string {
           if (child.type === 'element' && child.tag === 'img') {
             parts.push(convertNode(child, images));
           } else if (child.type === 'element' && child.tag === 'figcaption') {
-            const caption = convertInline(child).trim();
+            const caption = convertInline(child, images).trim();
             if (caption) parts.push(`\n*${caption}*\n`);
           }
         }
@@ -621,7 +624,12 @@ function convertNode(node: HtmlNode, images: ImageReference[]): string {
     case 'strike':
     case 'sup':
     case 'sub':
-      return convertInline(node);
+      return convertInline(node, images);
+
+    // Strip <head> and <title> — metadata is extracted separately
+    case 'head':
+    case 'title':
+      return '';
 
     // Structural elements that we unwrap
     case 'div':
@@ -631,8 +639,6 @@ function convertNode(node: HtmlNode, images: ImageReference[]): string {
     case 'main':
     case 'body':
     case 'html':
-    case 'head':
-    case 'title':
     case 'form':
     case 'fieldset':
     case 'legend':

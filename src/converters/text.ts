@@ -75,7 +75,7 @@ export function convertTextToMarkdown(text: string): string {
 
     // Check for list items (ordered)
     if (/^\s*\d+[.)]\s+/.test(line)) {
-      outputLines.push(line.replace(/^\s*(\d+)[.)]\s+/, '$1. '));
+      outputLines.push(line.replace(/^(\s*)(\d+)[.)]\s+/, '$1$2. '));
       i++;
       continue;
     }

@@ -540,3 +540,41 @@ describe('extractHtmlMetadata', () => {
     expect(meta.date).toBe('2024-01-01');
   });
 });
+
+describe('bug fix tests', () => {
+  it('handles Unicode code points above U+FFFF (emoji)', () => {
+    const { markdown } = convertHtmlToMarkdown('<p>&#x1F600; smile</p>');
+    expect(markdown).toContain('\u{1F600}');
+  });
+
+  it('tracks images inside inline elements (paragraphs)', () => {
+    const { markdown, images } = convertHtmlToMarkdown('<p>Text <img src="pic.png" alt="photo"> more</p>');
+    expect(markdown).toContain('![photo](pic.png)');
+    expect(images).toHaveLength(1);
+    expect(images[0].src).toBe('pic.png');
+  });
+
+  it('tracks images inside table cells', () => {
+    const { images } = convertHtmlToMarkdown('<table><tr><td><img src="cell.png" alt="cell"></td></tr></table>');
+    expect(images).toHaveLength(1);
+    expect(images[0].src).toBe('cell.png');
+  });
+
+  it('tracks images inside list items', () => {
+    const { images } = convertHtmlToMarkdown('<ul><li><img src="li.png" alt="item"></li></ul>');
+    expect(images).toHaveLength(1);
+    expect(images[0].src).toBe('li.png');
+  });
+
+  it('strips head and title content from markdown output', () => {
+    const { markdown } = convertHtmlToMarkdown('<html><head><title>Page Title</title></head><body><p>Body</p></body></html>');
+    expect(markdown).not.toContain('Page Title');
+    expect(markdown).toContain('Body');
+  });
+
+  it('strips head content when no body tag present', () => {
+    const { markdown } = convertHtmlToMarkdown('<head><title>No Body</title></head><p>Content</p>');
+    expect(markdown).not.toContain('No Body');
+    expect(markdown).toContain('Content');
+  });
+});
