@@ -84,6 +84,34 @@ describe('detectFormat', () => {
       expect(detectFormat(zipBuffer)).toBe('pptx');
     });
 
+    it('detects DOCX even when preceding bytes would corrupt UTF-8 decoding', () => {
+      // Simulate a ZIP file where bytes before 'word/' form partial
+      // multi-byte UTF-8 sequences that corrupt ASCII markers
+      const zipBuffer = Buffer.alloc(100);
+      zipBuffer[0] = 0x50; // P
+      zipBuffer[1] = 0x4b; // K
+      zipBuffer[2] = 0x03;
+      zipBuffer[3] = 0x04;
+      // Write a leading byte of a 3-byte UTF-8 sequence (0xe0) without
+      // valid continuation bytes, which corrupts subsequent ASCII under UTF-8
+      zipBuffer[9] = 0xe0;
+      const wordHint = Buffer.from('word/document.xml');
+      wordHint.copy(zipBuffer, 10);
+      expect(detectFormat(zipBuffer)).toBe('docx');
+    });
+
+    it('detects PPTX even when preceding bytes would corrupt UTF-8 decoding', () => {
+      const zipBuffer = Buffer.alloc(100);
+      zipBuffer[0] = 0x50; // P
+      zipBuffer[1] = 0x4b; // K
+      zipBuffer[2] = 0x03;
+      zipBuffer[3] = 0x04;
+      zipBuffer[9] = 0xe0;
+      const pptHint = Buffer.from('ppt/slides/slide1.xml');
+      pptHint.copy(zipBuffer, 10);
+      expect(detectFormat(zipBuffer)).toBe('pptx');
+    });
+
     it('defaults ZIP to docx when no content type hints', () => {
       const zipBuffer = Buffer.alloc(10);
       zipBuffer[0] = 0x50;
