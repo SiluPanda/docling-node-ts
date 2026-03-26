@@ -40,7 +40,7 @@ function detectFromMagicBytes(input: Buffer): InputFormat | null {
   // ZIP-based formats (DOCX, PPTX): starts with PK\x03\x04
   if (input[0] === 0x50 && input[1] === 0x4b && input[2] === 0x03 && input[3] === 0x04) {
     // Look for content type hints in the raw bytes
-    const content = input.toString('utf-8', 0, Math.min(input.length, 4096));
+    const content = input.toString('latin1', 0, Math.min(input.length, 4096));
     if (content.includes('word/')) {
       return 'docx';
     }
